@@ -1,0 +1,42 @@
+//
+// build.gradle in TeamCode
+//
+// Most of the definitions for building your module reside in a common, shared
+// file 'build.common.gradle'. Being factored in this way makes it easier to
+// integrate updates to the FTC into your code. If you really need to customize
+// the build definitions, you can place those customizations in this file, but
+// please think carefully as to whether such customizations are really necessary
+// before doing so.
+
+
+// Custom definitions may go here
+
+// Include common definitions from above.
+apply from: '../build.common.gradle'
+apply from: '../build.dependencies.gradle'
+apply plugin: 'kotlin-android'
+
+apply plugin: 'org.mozilla.rust-android-gradle.rust-android'
+
+
+android {
+    namespace = 'org.firstinspires.ftc.teamcode'
+
+    packagingOptions {
+        jniLibs.useLegacyPackaging true
+    }
+    ndkVersion = "25.2.9519653"
+}
+
+cargo {
+    module  = "./rust"             // Or whatever directory contains your Cargo.toml
+    libname = "rust_code"          // Or whatever matches Cargo.toml's [package] name.
+    targets = ["arm", "arm64"]       // See bellow for a longer list of options
+    profile = "release"            // CHANGE THIS TO "release" BEFORE SHIPPING!
+    targetIncludes = ['librust_code.so']
+}
+
+dependencies {
+    implementation project(':FtcRobotController')
+    annotationProcessor files('lib/OpModeAnnotationProcessor.jar')
+}

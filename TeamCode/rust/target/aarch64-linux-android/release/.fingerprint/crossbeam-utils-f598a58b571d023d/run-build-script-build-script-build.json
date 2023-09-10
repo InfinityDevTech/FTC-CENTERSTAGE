@@ -1,0 +1,1 @@
+{"rustc":12271988683931304699,"features":"","target":0,"profile":0,"path":0,"deps":[[6646600333789513627,"build_script_build",false,12772919575776429122]],"local":[{"RerunIfChanged":{"output":"aarch64-linux-android/release/build/crossbeam-utils-f598a58b571d023d/output","paths":["no_atomic.rs"]}}],"rustflags":[],"metadata":0,"config":0,"compile_kind":0}
