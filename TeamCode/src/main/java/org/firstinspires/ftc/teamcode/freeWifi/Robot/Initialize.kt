@@ -2,10 +2,12 @@ package org.firstinspires.ftc.teamcode.freeWifi.Robot
 
 import com.qualcomm.robotcore.hardware.DcMotor
 import com.qualcomm.robotcore.hardware.Gamepad
+import com.outoftheboxrobotics.photoncore.PhotonCore;
 import com.qualcomm.robotcore.hardware.Gamepad.RumbleEffect
 
 class Initialize(private val robot: Robot) {
     fun init() {
+        PhotonCore.enable();
         robot.halfTimeRumble = Gamepad.RumbleEffect.Builder().addStep(1.0, 1.0, 200).addStep(0.0, 0.0, 200).addStep(1.0, 1.0, 200).build()
         robot.endGameRumble = Gamepad.RumbleEffect.Builder().addStep(1.0, 0.0, 200).addStep(0.0, 1.0, 200).addStep(1.0, 0.0, 200).addStep(0.0, 1.0, 200).addStep(1.0, 0.0, 200).build()
 
