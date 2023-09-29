@@ -37,5 +37,8 @@ class Mecanum : LinearOpMode() {
      * This is the custom loop that will be used. It runs as fast as possible.
      */
     private fun customLoop() {
+        while (opModeIsActive()) {
+
+        }
     }
 }
