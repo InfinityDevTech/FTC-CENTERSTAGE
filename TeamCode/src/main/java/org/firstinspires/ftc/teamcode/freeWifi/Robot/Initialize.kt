@@ -1,9 +1,7 @@
 package org.firstinspires.ftc.teamcode.freeWifi.Robot
 
-import com.qualcomm.robotcore.hardware.DcMotor
 import com.qualcomm.robotcore.hardware.Gamepad
 import com.outoftheboxrobotics.photoncore.PhotonCore;
-import com.qualcomm.robotcore.hardware.Gamepad.RumbleEffect
 
 class Initialize(private val robot: Robot) {
     fun init() {
@@ -19,6 +17,6 @@ class Initialize(private val robot: Robot) {
         //)
         robot.telemetry.addLine("[ROBOT]: Initialized all Motors, Servos, and Sensors")
 
-        robot.CurrentState = "Initialized";
+        robot.currentState = "Initialized";
     }
 }

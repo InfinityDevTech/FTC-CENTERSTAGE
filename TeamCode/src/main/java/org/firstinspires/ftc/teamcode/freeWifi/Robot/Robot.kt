@@ -22,7 +22,7 @@ enum class Servos {}
 enum class Sensors {}
 
 class Robot(val opMode: OpMode) {
-    var CurrentState = "Nothing"
+    var currentState = "Nothing"
     private val init = Initialize(this)
 
     lateinit var motors: HashMap<Motors, DcMotor>
