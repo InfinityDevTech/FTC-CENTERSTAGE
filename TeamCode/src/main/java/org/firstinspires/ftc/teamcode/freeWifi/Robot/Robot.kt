@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.freeWifi.Robot
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
 import com.qualcomm.robotcore.eventloop.opmode.OpMode
 import com.qualcomm.robotcore.hardware.DcMotor
+import com.qualcomm.robotcore.hardware.DcMotorSimple
 import com.qualcomm.robotcore.hardware.Gamepad.RumbleEffect
 import com.qualcomm.robotcore.hardware.HardwareMap
 import com.qualcomm.robotcore.hardware.Servo
@@ -39,11 +40,17 @@ class Robot(val opMode: OpMode) {
 
     fun init() {
       init.init(); // Populate fields in this class.
+
+        this.motors[Motors.RightFront]?.direction = DcMotorSimple.Direction.REVERSE;
       telemetry.addLine("[ROBOT]: Initialized bot")
     }
 
     fun setMotorMode(motor: Motors, mode: DcMotor.RunMode) {
         this.motors[motor]?.mode = mode;
+    }
+
+    fun setMotorPower(motor: Motors, power: Double) {
+        this.motors[motor]?.power = power;
     }
 
     fun setMotorsMode(mode: DcMotor.RunMode, vararg motors: Motors) {
