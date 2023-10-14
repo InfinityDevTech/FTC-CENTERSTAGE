@@ -17,9 +17,6 @@ buildscript {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
     }
 }
-plugins {
-    id "org.mozilla.rust-android-gradle.rust-android" version "0.9.3"
-}
 
 // This is now required because aapt2 has to be downloaded from the
 // google() repository beginning with version 3.2 of the Android Gradle Plugin
