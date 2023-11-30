@@ -8,4 +8,6 @@ object Constants {
 
     // When you push button to change speed, how much to modify speed by per tick.
     @JvmField var speed_modifier: Float = 0.05F;
+    @JvmField var mid_target: Int = -1000;
+    @JvmField var low_target: Int = 1500;
 }

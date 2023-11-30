@@ -13,12 +13,21 @@ enum class Motors {
     LeftFront,
     RightFront,
     LeftBack,
-    RightBack
+    RightBack,
+    ArmLeft,
+    ArmRight,
+    ArmMid
+}
+
+interface IMovementComposable {
+    fun run_movement();
 }
 
 
-
-enum class Servos {}
+enum class Servos {
+    ClawRot,
+    ClawGrip
+}
 
 enum class Sensors {}
 
@@ -41,7 +50,11 @@ class Robot(val opMode: OpMode) {
     fun init() {
       init.init(); // Populate fields in this class.
 
-        this.motors[Motors.RightFront]?.direction = DcMotorSimple.Direction.REVERSE;
+        //this.motors[Motors.RightFront]?.direction = DcMotorSimple.Direction.REVERSE;
+        //this.motors[Motors.RightBack]?.direction = DcMotorSimple.Direction.REVERSE;
+
+        this.servos[Servos.ClawRot]?.direction = Servo.Direction.REVERSE;
+
       telemetry.addLine("[ROBOT]: Initialized bot")
     }
 
@@ -51,6 +64,12 @@ class Robot(val opMode: OpMode) {
 
     fun setMotorPower(motor: Motors, power: Double) {
         this.motors[motor]?.power = power;
+    }
+
+    fun setMotorsPower(power: Double, vararg motors: Motors) {
+        for (motor in motors) {
+            this.motors[motor]?.power = power;
+        }
     }
 
     fun setMotorsMode(mode: DcMotor.RunMode, vararg motors: Motors) {
