@@ -16,7 +16,8 @@ enum class Motors {
     RightBack,
     ArmLeft,
     ArmRight,
-    ArmMid
+    ArmMid,
+    Intake
 }
 
 interface IMovementComposable {
@@ -26,7 +27,8 @@ interface IMovementComposable {
 
 enum class Servos {
     ClawRot,
-    ClawGrip
+    ClawGrip,
+    PewPew
 }
 
 enum class Sensors {}
@@ -48,14 +50,14 @@ class Robot(val opMode: OpMode) {
     val isActive get() = (opMode as LinearOpMode).opModeIsActive()
 
     fun init() {
-      init.init(); // Populate fields in this class.
+        init.init(); // Populate fields in this class.
 
         //this.motors[Motors.RightFront]?.direction = DcMotorSimple.Direction.REVERSE;
         //this.motors[Motors.RightBack]?.direction = DcMotorSimple.Direction.REVERSE;
 
         this.servos[Servos.ClawRot]?.direction = Servo.Direction.REVERSE;
 
-      telemetry.addLine("[ROBOT]: Initialized bot")
+        telemetry.addLine("[ROBOT]: Initialized bot")
     }
 
     fun setMotorMode(motor: Motors, mode: DcMotor.RunMode) {

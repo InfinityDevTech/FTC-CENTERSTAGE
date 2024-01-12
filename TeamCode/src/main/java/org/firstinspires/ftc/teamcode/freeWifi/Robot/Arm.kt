@@ -2,25 +2,28 @@ package org.firstinspires.ftc.teamcode.freeWifi.Robot
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
 import com.qualcomm.robotcore.hardware.DcMotor
+import com.qualcomm.robotcore.hardware.DcMotorSimple
 import com.qualcomm.robotcore.hardware.HardwareDevice
 import com.qualcomm.robotcore.hardware.Servo
 import org.firstinspires.ftc.teamcode.freeWifi.Constants
 import kotlin.reflect.KProperty1
 
-public data class ArmPos(val button: String, val mid_pos: Int, val low_pos: Int, val name: String);
+public data class ArmPos(val button: String, val mid_pos: Int, val low_pos: Int, val rot_pos: Double, val name: String);
 class Arm(var robot: Robot) : IMovementComposable {
     private var mid_pos = 0;
     private var low_pos = 0;
-    private var claw_rot_pos = 0.00;
-    private var claw_grip_pos = 0.00;
+    private var claw_rot_pos = 0.46;
+    private var claw_grip_pos = 0.85;
 
-    private var claw_close_pos = 0.8;
-    private var claw_open_pos = 1.0;
+    private var gripping = false;
+
+    private var claw_close_pos = 0.5;
+    private var claw_open_pos = 0.85;
 
     // Its very iffy. I am going to make a calibration mechanic for worlds.
     private var set_positions: Array<ArmPos> = arrayOf(
-        ArmPos("y", -6000, 60, "Place"),
-        ArmPos("a", 0, 0, "Grab")
+        ArmPos("y", -5070, 150, 1.0, "Place"),
+        ArmPos("a", 0, 0, 0.46, "Grab")
     );
 
     private var arm_left: DcMotor = robot.motors[Motors.ArmLeft]!!;
@@ -28,6 +31,7 @@ class Arm(var robot: Robot) : IMovementComposable {
     private var arm_mid: DcMotor = robot.motors[Motors.ArmMid]!!;
     private var claw_rot: Servo = robot.servos[Servos.ClawRot]!!;
     private var claw_grip: Servo = robot.servos[Servos.ClawGrip]!!;
+    private var pew_pew: Servo = robot.servos[Servos.PewPew]!!;
 
     //private var claw_rotation: Servo;
     //private var claw_grip: Servo;
@@ -39,6 +43,7 @@ class Arm(var robot: Robot) : IMovementComposable {
         arm_mid.targetPosition = mid_pos
         arm_left.targetPosition = -low_pos
         arm_right.targetPosition = low_pos
+        pew_pew.direction = Servo.Direction.REVERSE;
         robot.setMotorsMode(DcMotor.RunMode.RUN_TO_POSITION, Motors.ArmLeft, Motors.ArmRight, Motors.ArmMid);
         robot.setMotorsPower(1.0, Motors.ArmLeft, Motors.ArmRight, Motors.ArmMid);
     }
@@ -46,11 +51,11 @@ class Arm(var robot: Robot) : IMovementComposable {
     fun run_logs() {
         robot.telemetry.addLine("[ARM]: Running arm logs")
         robot.telemetry.addLine("[DEBUG] Dont forget, left + right = low, mid is mid")
-        robot.telemetry.addLine("Left: " + arm_left.currentPosition.toString())
-        robot.telemetry.addLine("Right: " + arm_right.currentPosition.toString())
-        robot.telemetry.addLine("Mid: " + arm_mid.currentPosition.toString())
-        robot.telemetry.addLine("Claw Rot: " + claw_rot_pos.toString());
-        robot.telemetry.addLine("Claw Grip: " + claw_grip_pos.toString());
+        robot.telemetry.addLine("[ARM] Left: " + arm_left.currentPosition.toString())
+        robot.telemetry.addLine("[ARM] Right: " + arm_right.currentPosition.toString())
+        robot.telemetry.addLine("[ARM] Mid: " + arm_mid.currentPosition.toString())
+        robot.telemetry.addLine("[ARM] Claw Rot: " + claw_rot_pos.toString());
+        robot.telemetry.addLine("[ARM] Claw Grip: " + claw_grip_pos.toString());
         //robot.telemetry.addLine("Claw Control: " + claw_rotation.position.toString())
         robot.telemetry.addLine("     ----- END ARM LOGS -----")
     }
@@ -71,6 +76,7 @@ class Arm(var robot: Robot) : IMovementComposable {
     private fun set_pos(pos: ArmPos) {
         mid_pos = pos.mid_pos
         low_pos = pos.low_pos
+        claw_rot_pos = pos.rot_pos;
     }
 
     override fun run_movement() {
@@ -81,15 +87,29 @@ class Arm(var robot: Robot) : IMovementComposable {
         claw_rot.position = claw_rot_pos
         claw_grip.position = claw_grip_pos;
 
+        var claw_but_pressed = false;
+
         // Manual controls.
-        if (robot.opMode.gamepad2.right_bumper) {low_pos += 30}
-        if (robot.opMode.gamepad2.left_bumper) {low_pos -= 30}
-        if (robot.opMode.gamepad2.dpad_up) {mid_pos -= 30}
-        if (robot.opMode.gamepad2.dpad_down) {mid_pos += 30}
-        if (robot.opMode.gamepad2.dpad_left) {claw_rot_pos -= 0.01}
-        if (robot.opMode.gamepad2.dpad_right) {claw_rot_pos += 0.01}
-        if (robot.opMode.gamepad2.x) {claw_grip_pos = claw_open_pos}
-        if (robot.opMode.gamepad2.b) {claw_grip_pos = claw_close_pos}
+        if (robot.opMode.gamepad2.right_bumper) low_pos += 30
+        if (robot.opMode.gamepad2.left_bumper) low_pos -= 30
+        if (robot.opMode.gamepad2.dpad_up) mid_pos -= 30
+        if (robot.opMode.gamepad2.dpad_down) mid_pos += 30
+        if (robot.opMode.gamepad2.dpad_left) claw_rot_pos -= 0.01
+        if (robot.opMode.gamepad2.dpad_right) claw_rot_pos += 0.01
+        if (robot.opMode.gamepad2.left_stick_button) pew_pew.position = 1.0;
+
+        if (robot.opMode.gamepad2.x && claw_but_pressed == false) {
+            gripping = !gripping
+            claw_but_pressed = true;
+        } else if (!robot.opMode.gamepad2.x && claw_but_pressed == true) {
+            claw_but_pressed = false;
+        }
+
+        if (gripping) {
+            claw_grip_pos = claw_close_pos
+        } else {
+            claw_grip_pos = claw_open_pos
+        }
 
         claw_rot_pos = claw_rot_pos.coerceIn(0.0, 1.0);
         claw_grip_pos = claw_grip_pos.coerceIn(0.0, 1.0);

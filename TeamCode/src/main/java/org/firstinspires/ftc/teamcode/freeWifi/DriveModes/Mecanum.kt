@@ -7,6 +7,7 @@ import org.firstinspires.ftc.robotcore.external.hardware.camera.BuiltinCameraDir
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName
 import org.firstinspires.ftc.teamcode.freeWifi.Constants
 import org.firstinspires.ftc.teamcode.freeWifi.Robot.Arm
+import org.firstinspires.ftc.teamcode.freeWifi.Robot.Intake
 import org.firstinspires.ftc.teamcode.freeWifi.Robot.Motors
 import org.firstinspires.ftc.teamcode.freeWifi.Robot.Robot
 import org.firstinspires.ftc.vision.VisionPortal
@@ -14,7 +15,7 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor
 
 
 @TeleOp(name = "Mecanum", group = "TelPrimary")
-class Mecanum : LinearOpMode(){
+class Mecanum : LinearOpMode() {
 
     val robot = Robot(this);
 
@@ -39,6 +40,7 @@ class Mecanum : LinearOpMode(){
         waitForStart();
 
         val arm = Arm(robot);
+        val intake = Intake(robot);
 
         // Pre loop variable initialization
         val gamepad1: Gamepad = this.gamepad1;
@@ -51,6 +53,8 @@ class Mecanum : LinearOpMode(){
 
             arm.run_movement();
             arm.run_logs();
+            intake.run_movement();
+
 
             // Delta Time is the time between loops
             fun deltaTime(): Float {
@@ -70,16 +74,15 @@ class Mecanum : LinearOpMode(){
             var horizontal: Float;
             var rotation: Float;
 
-            if (mirror) {
+            /*if (mirror) {
                 vertical = gamepad1.right_stick_x
                 horizontal = -gamepad1.left_stick_x
                 rotation = gamepad1.left_stick_y
-            } else {
-                vertical = -gamepad1.right_stick_x
-                horizontal = gamepad1.left_stick_x
-                rotation = -gamepad1.left_stick_y
-            }
-
+            } else {*/
+            vertical = -gamepad1.right_stick_x
+            horizontal = gamepad1.left_stick_x
+            rotation = -gamepad1.left_stick_y
+            //}
 
 
             robot.setMotorPower(Motors.LeftFront, (-rotation + vertical + horizontal) * speed)

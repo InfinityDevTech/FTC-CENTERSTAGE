@@ -35,11 +35,11 @@ import java.util.List;
 @Config
 public class TwoWheelTrackingLocalizer extends TwoTrackingWheelLocalizer {
     public static double TICKS_PER_REV = 2000;
-    public static double WHEEL_RADIUS = 1.654/2; // in
+    public static double WHEEL_RADIUS = 1.889/2; // in
     public static double GEAR_RATIO = 1; // output (wheel) speed / input (encoder) speed
 
-    public static double PARALLEL_Y = 6;//-3.65; // moves up and left
-    public static double PERPENDICULAR_X = -6;//3.25; // moves down and right
+    public static double PARALLEL_Y = 4;//-3.65; // moves up and left
+    public static double PERPENDICULAR_X = 2.47;//3.25; // moves down and right
 
     private static double PARALLEL_X = 0;//-2.575;
     private static double PERPENDICULAR_Y = 0;//-0.64375;
@@ -62,8 +62,8 @@ public class TwoWheelTrackingLocalizer extends TwoTrackingWheelLocalizer {
 
         this.drive = drive;
 
-        parallelEncoder = new Encoder(hardwareMap.get(DcMotorEx.class, "para_enc"));
-        perpendicularEncoder = new Encoder(hardwareMap.get(DcMotorEx.class, "perp_enc"));
+        parallelEncoder = new Encoder(hardwareMap.get(DcMotorEx.class, "front_right"));
+        perpendicularEncoder = new Encoder(hardwareMap.get(DcMotorEx.class, "back_left"));
 
         // TODO: reverse any encoders using Encoder.setDirection(Encoder.Direction.REVERSE)
         perpendicularEncoder.setDirection(Encoder.Direction.REVERSE);

@@ -17,11 +17,13 @@ class Initialize(private val robot: Robot) {
             Motors.ArmLeft to robot.hardwareMap.get(DcMotor::class.java, "arm_left"),
             Motors.ArmRight to robot.hardwareMap.get(DcMotor::class.java, "arm_right"),
             Motors.ArmMid to robot.hardwareMap.get(DcMotor::class.java, "arm_mid"),
+            Motors.Intake to robot.hardwareMap.get(DcMotor::class.java, "intake")
         )
 
         robot.servos = hashMapOf(
             Servos.ClawRot to robot.hardwareMap.get(Servo::class.java, "claw_rot"),
-            Servos.ClawGrip to robot.hardwareMap.get(Servo::class.java, "claw_grip")
+            Servos.ClawGrip to robot.hardwareMap.get(Servo::class.java, "claw_grip"),
+            Servos.PewPew to robot.hardwareMap.get(Servo::class.java, "pewpewpewpew")
         );
 
         robot.telemetry.addLine("[ROBOT]: Initialized all Motors, Servos, and Sensors")
