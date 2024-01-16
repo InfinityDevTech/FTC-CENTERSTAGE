@@ -12,16 +12,21 @@ class LeftAuto : LinearOpMode() {
     override fun runOpMode() {
         val drive = SampleMecanumDrive(hardwareMap);
 
-        val dest = Pose2d(0.0, 0.0, 0.0);
+        val start = Pose2d(-38.0, 61.0, Math.toRadians(-90.0))
 
-        val cycle: TrajectorySequence = drive.trajectorySequenceBuilder(dest)
-            .setTangent(Math.toRadians(-10.0))
-            .splineToConstantHeading(Vector2d(10.0, 10.0), Math.toRadians(0.0))
-            .setTangent(Math.toRadians(180.0))
+        val trajectory = drive.trajectorySequenceBuilder(start)
+            .forward(52.0)
+            .turn(Math.toRadians(90.0))
+            .forward(52.0)
+            .turn(Math.toRadians(180.0))
+            .strafeRight(49.0)
+            .back(45.0)
             .build()
+
+
         waitForStart();
         while (opModeIsActive()) {
-            drive.followTrajectorySequence(cycle)
+            drive.followTrajectorySequence(trajectory)
             telemetry.addLine("AUTO HAS NOT BEEN IMPLEMENTED YET");
             telemetry.update()
         }
