@@ -26,6 +26,8 @@ class Initialize(private val robot: Robot) {
             Servos.PewPew to robot.hardwareMap.get(Servo::class.java, "pewpewpewpew")
         );
 
+        robot.servos[Servos.ClawRot]?.direction = Servo.Direction.REVERSE;
+
         robot.telemetry.addLine("[ROBOT]: Initialized all Motors, Servos, and Sensors")
 
         robot.currentState = "Initialized";

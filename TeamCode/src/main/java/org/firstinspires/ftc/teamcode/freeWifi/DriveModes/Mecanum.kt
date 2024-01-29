@@ -1,13 +1,13 @@
 package org.firstinspires.ftc.teamcode.freeWifi.DriveModes
 
+import com.acmerobotics.roadrunner.geometry.Pose2d
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp
 import com.qualcomm.robotcore.hardware.Gamepad
 import org.firstinspires.ftc.robotcore.external.hardware.camera.BuiltinCameraDirection
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName
-import org.firstinspires.ftc.teamcode.freeWifi.Constants
+import org.firstinspires.ftc.teamcode.freeWifi.RR.SampleMecanumDrive
 import org.firstinspires.ftc.teamcode.freeWifi.Robot.Arm
-import org.firstinspires.ftc.teamcode.freeWifi.Robot.Intake
 import org.firstinspires.ftc.teamcode.freeWifi.Robot.Motors
 import org.firstinspires.ftc.teamcode.freeWifi.Robot.Robot
 import org.firstinspires.ftc.vision.VisionPortal
@@ -19,42 +19,57 @@ class Mecanum : LinearOpMode() {
 
     val robot = Robot(this);
 
+
+
     private var aprilTag: AprilTagProcessor? = null
 
     private var visionPortal: VisionPortal? = null
 
     private var fast_mode: Boolean = false;
-    private var mirror: Boolean = false;
 
     // INIT
     override fun runOpMode() {
-        robot.init();
+        // Start the pipeline
+        //initAprilTag();
 
-        initAprilTag();
-
-        telemetry.update();
-
-        telemetry.addLine("[ROBOT]: " + robot.currentState);
-        telemetry.update();
-
-        waitForStart();
-
-        val arm = Arm(robot);
-        val intake = Intake(robot);
-
-        // Pre loop variable initialization
+        // Variables
         val gamepad1: Gamepad = this.gamepad1;
         val gamepad2: Gamepad = this.gamepad2;
         var lastTime: Long = System.currentTimeMillis();
+        
+        var speed_pressed = false;
 
+        telemetry.addLine("[ROBOT]: " + robot.currentState);
+
+        robot.init();
+        val smd = SampleMecanumDrive(robot.hardwareMap);
+
+        //smd.poseEstimate = Pose2d(-38.0, 61.0, Math.toRadians(90.0));
+
+        telemetry.update();
+
+        // Wait for the start to press
+        waitForStart();
+
+        // Moves, so lets not run before initialization
+        val arm = Arm(robot);
+
+        telemetry.update();
+
+        // NO VARIABLES IN HERE PERSIST. ITS PER LOOP!
         while (opModeIsActive()) {
-
-            var speed: Double = 0.5;
 
             arm.run_movement();
             arm.run_logs();
-            intake.run_movement();
 
+            smd.update();
+
+            val pose = smd.poseEstimate;
+
+            telemetry.addData("x", pose.x);
+            telemetry.addData("y", pose.y);
+            telemetry.addData("heading", pose.heading);
+            var speed = 0.5;
 
             // Delta Time is the time between loops
             fun deltaTime(): Float {
@@ -64,26 +79,18 @@ class Mecanum : LinearOpMode() {
             }
 
             // Per loop variable initialization
-            if (gamepad1.left_bumper) fast_mode = !fast_mode;
+            if (gamepad1.left_bumper && !speed_pressed) {
+                fast_mode = !fast_mode
+                speed_pressed = true
+            } else if (!gamepad1.left_bumper && speed_pressed) {
+                speed_pressed = false
+            }
 
             if (fast_mode) speed = 1.0;
 
-            if (gamepad1.right_bumper) mirror = !mirror;
-
-            var vertical: Float;
-            var horizontal: Float;
-            var rotation: Float;
-
-            /*if (mirror) {
-                vertical = gamepad1.right_stick_x
-                horizontal = -gamepad1.left_stick_x
-                rotation = gamepad1.left_stick_y
-            } else {*/
-            vertical = -gamepad1.right_stick_x
-            horizontal = gamepad1.left_stick_x
-            rotation = -gamepad1.left_stick_y
-            //}
-
+            val vertical: Float = -gamepad1.right_stick_x
+            val horizontal: Float = -gamepad1.left_stick_y
+            val rotation: Float = gamepad1.left_stick_x
 
             robot.setMotorPower(Motors.LeftFront, (-rotation + vertical + horizontal) * speed)
             robot.setMotorPower(Motors.RightFront, (rotation + vertical + -horizontal) * speed)
@@ -108,14 +115,8 @@ class Mecanum : LinearOpMode() {
         aprilTag = AprilTagProcessor.easyCreateWithDefaults()
 
         // Create the vision portal the easy way.
-        if (true) {
             visionPortal = VisionPortal.easyCreateWithDefaults(
                 hardwareMap[WebcamName::class.java, "Webcam 1"], aprilTag
             )
-        } else {
-            visionPortal = VisionPortal.easyCreateWithDefaults(
-                BuiltinCameraDirection.BACK, aprilTag
-            )
-        }
     }
 }

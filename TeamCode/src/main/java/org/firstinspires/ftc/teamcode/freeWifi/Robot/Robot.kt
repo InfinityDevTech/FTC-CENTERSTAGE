@@ -49,34 +49,45 @@ class Robot(val opMode: OpMode) {
     val hardwareMap: HardwareMap get() = opMode.hardwareMap
     val isActive get() = (opMode as LinearOpMode).opModeIsActive()
 
-    fun init() {
+    fun init() : Robot {
+        if (this.currentState == "Initialized") {
+            telemetry.addLine("[ROBOT]: Multiple calls to init, ignoring...")
+
+            return this;
+        }
         init.init(); // Populate fields in this class.
 
-        //this.motors[Motors.RightFront]?.direction = DcMotorSimple.Direction.REVERSE;
-        //this.motors[Motors.RightBack]?.direction = DcMotorSimple.Direction.REVERSE;
+        //this.motors[Motors.LeftFront]?.direction = DcMotorSimple.Direction.REVERSE;
+        //this.motors[Motors.LeftBack]?.direction = DcMotorSimple.Direction.REVERSE;
 
         this.servos[Servos.ClawRot]?.direction = Servo.Direction.REVERSE;
 
-        telemetry.addLine("[ROBOT]: Initialized bot")
+        telemetry.addLine("[ROBOT]: Initialized Robit");
+
+        return this;
     }
 
-    fun setMotorMode(motor: Motors, mode: DcMotor.RunMode) {
+    fun setMotorMode(motor: Motors, mode: DcMotor.RunMode) : Robot {
         this.motors[motor]?.mode = mode;
+        return this;
     }
 
-    fun setMotorPower(motor: Motors, power: Double) {
+    fun setMotorPower(motor: Motors, power: Double) : Robot {
         this.motors[motor]?.power = power;
+        return this;
     }
 
-    fun setMotorsPower(power: Double, vararg motors: Motors) {
+    fun setMotorsPower(power: Double, vararg motors: Motors) : Robot {
         for (motor in motors) {
             this.motors[motor]?.power = power;
         }
+        return this;
     }
 
-    fun setMotorsMode(mode: DcMotor.RunMode, vararg motors: Motors) {
+    fun setMotorsMode(mode: DcMotor.RunMode, vararg motors: Motors) : Robot {
         for (motor in motors) {
             setMotorMode(motor, mode)
         }
+        return this;
     }
 }
