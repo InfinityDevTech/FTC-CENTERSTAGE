@@ -19,6 +19,8 @@ import org.firstinspires.ftc.teamcode.freeWifi.RR.trajectorysequence.TrajectoryS
 import org.firstinspires.ftc.teamcode.freeWifi.RR.trajectorysequence.TrajectorySequenceBuilder;
 import org.firstinspires.ftc.teamcode.freeWifi.RR.trajectorysequence.TrajectorySequenceRunner;
 import org.firstinspires.ftc.teamcode.freeWifi.RR.util.LynxModuleUtil;
+import org.firstinspires.ftc.teamcode.freeWifi.Robot.Motors;
+import org.firstinspires.ftc.teamcode.freeWifi.Robot.Robot;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -47,16 +49,18 @@ public class SampleMecanumDrive extends MecanumDrive {
 
     private TrajectoryFollower follower;
 
-    private DcMotorEx leftFront, leftRear, rightRear, rightFront;
+    private DcMotorEx leftFront;
+    private DcMotorEx leftRear;
+    private DcMotorEx rightRear;
+    private DcMotorEx rightFront;
 
     private List<DcMotorEx> motors;
 
-    private BNO055IMU imu;
     private VoltageSensor batteryVoltageSensor;
 
-    public SampleMecanumDrive(HardwareMap hardwareMap //Telemetry telem
-                               ) {
+    public SampleMecanumDrive(Robot robot) {
         super(kV, kA, kStatic, TRACK_WIDTH, TRACK_WIDTH, LATERAL_MULTIPLIER);
+        HardwareMap hardwareMap = robot.getHardwareMap();
 
         follower = new HolonomicPIDVAFollower(TRANSLATIONAL_PID, TRANSLATIONAL_PID, HEADING_PID,
                 new Pose2d(0.5, 0.5, Math.toRadians(5.0)), 0.5);
@@ -69,10 +73,10 @@ public class SampleMecanumDrive extends MecanumDrive {
             module.setBulkCachingMode(LynxModule.BulkCachingMode.AUTO);
         }
 
-        leftFront = hardwareMap.get(DcMotorEx.class, "front_left");
-        leftRear = hardwareMap.get(DcMotorEx.class, "back_left");
-        rightRear = hardwareMap.get(DcMotorEx.class, "back_right");
-        rightFront = hardwareMap.get(DcMotorEx.class, "front_right");
+        leftFront = (DcMotorEx) robot.motors.get(Motors.LeftFront);
+        leftRear = (DcMotorEx) robot.motors.get(Motors.LeftBack);
+        rightRear = (DcMotorEx) robot.motors.get(Motors.RightBack);
+        rightFront = (DcMotorEx) robot.motors.get(Motors.RightFront);
 
         motors = Arrays.asList(leftFront, leftRear, rightRear, rightFront);
 

@@ -1,11 +1,7 @@
 package org.firstinspires.ftc.teamcode.freeWifi.Robot
 
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
 import com.qualcomm.robotcore.hardware.DcMotor
-import com.qualcomm.robotcore.hardware.DcMotorSimple
-import com.qualcomm.robotcore.hardware.HardwareDevice
 import com.qualcomm.robotcore.hardware.Servo
-import org.firstinspires.ftc.teamcode.freeWifi.Constants
 import kotlin.reflect.KProperty1
 
 public data class ArmPos(val button: String, val mid_pos: Int, val low_pos: Int, val rot_pos: Double, val name: String);
@@ -26,6 +22,7 @@ class Arm(var robot: Robot) : IMovementComposable {
     private var set_positions: Array<ArmPos> = arrayOf(
         ArmPos("y", -5070, 150, 1.0, "Place"),
         ArmPos("a", 0, 0, 0.1, "Grab"),
+        ArmPos("b", -1, -210, 0.1, "Anti-Drag"),
         ArmPos("dpad_down", -8340, 1651, 0.54, "Init Grab"),
         ArmPos("dpad_up", -5280, 871, 0.54, "Pull Up"),
     );
@@ -58,8 +55,8 @@ class Arm(var robot: Robot) : IMovementComposable {
         robot.telemetry.addLine("[ARM] Left: " + arm_left.currentPosition.toString())
         robot.telemetry.addLine("[ARM] Right: " + arm_right.currentPosition.toString())
         robot.telemetry.addLine("[ARM] Mid: " + arm_mid.currentPosition.toString())
-        robot.telemetry.addLine("[ARM] Claw Rot: " + claw_rot_pos.toString());
-        robot.telemetry.addLine("[ARM] Claw Grip: " + claw_grip_pos.toString());
+        robot.telemetry.addLine("[ARM] Claw Rot: $claw_rot_pos");
+        robot.telemetry.addLine("[ARM] Claw Grip: $claw_grip_pos");
         //robot.telemetry.addLine("Claw Control: " + claw_rotation.position.toString())
         robot.telemetry.addLine("     ----- END ARM LOGS -----")
     }

@@ -13,6 +13,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.RobotLog;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.freeWifi.RR.SampleMecanumDrive;
+import org.firstinspires.ftc.teamcode.freeWifi.Robot.Robot;
 
 import java.util.Objects;
 
@@ -65,7 +66,9 @@ public class ManualFeedforwardTuner extends LinearOpMode {
 
         Telemetry telemetry = new MultipleTelemetry(this.telemetry, dashboard.getTelemetry());
 
-        drive = new SampleMecanumDrive(hardwareMap);
+        Robot robot = new Robot(this).init();
+
+        SampleMecanumDrive drive = new SampleMecanumDrive(robot);
 
         mode = Mode.TUNING_MODE;
 

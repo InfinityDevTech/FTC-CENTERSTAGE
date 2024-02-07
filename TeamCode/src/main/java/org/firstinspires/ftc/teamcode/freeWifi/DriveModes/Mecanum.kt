@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.freeWifi.DriveModes
 
 import com.acmerobotics.roadrunner.geometry.Pose2d
+import com.qualcomm.robotcore.hardware.DcMotorSimple
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp
 import com.qualcomm.robotcore.hardware.Gamepad
@@ -42,8 +43,10 @@ class Mecanum : LinearOpMode() {
         telemetry.addLine("[ROBOT]: " + robot.currentState);
 
         robot.init();
-        val smd = SampleMecanumDrive(robot.hardwareMap);
+        val smd = SampleMecanumDrive(robot);
 
+        //robot.motors[Motors.LeftFront]!!.direction = DcMotorSimple.Direction.REVERSE
+        //robot.motors[Motors.RightFront]!!.direction = DcMotorSimple.Direction.REVERSE
         //smd.poseEstimate = Pose2d(-38.0, 61.0, Math.toRadians(90.0));
 
         telemetry.update();
@@ -69,7 +72,7 @@ class Mecanum : LinearOpMode() {
             telemetry.addData("x", pose.x);
             telemetry.addData("y", pose.y);
             telemetry.addData("heading", pose.heading);
-            var speed = 0.5;
+            var speed = 0.7;
 
             // Delta Time is the time between loops
             fun deltaTime(): Float {
@@ -88,9 +91,9 @@ class Mecanum : LinearOpMode() {
 
             if (fast_mode) speed = 1.0;
 
-            val vertical: Float = -gamepad1.right_stick_x
-            val horizontal: Float = -gamepad1.left_stick_y
-            val rotation: Float = gamepad1.left_stick_x
+            val vertical: Float = -gamepad1.left_stick_y
+            val horizontal: Float = gamepad1.left_stick_x
+            val rotation: Float = -gamepad1.right_stick_x
 
             robot.setMotorPower(Motors.LeftFront, (-rotation + vertical + horizontal) * speed)
             robot.setMotorPower(Motors.RightFront, (rotation + vertical + -horizontal) * speed)

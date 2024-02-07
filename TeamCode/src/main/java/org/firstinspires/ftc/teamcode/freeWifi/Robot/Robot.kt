@@ -17,7 +17,6 @@ enum class Motors {
     ArmLeft,
     ArmRight,
     ArmMid,
-    Intake
 }
 
 interface IMovementComposable {
@@ -57,8 +56,8 @@ class Robot(val opMode: OpMode) {
         }
         init.init(); // Populate fields in this class.
 
-        //this.motors[Motors.LeftFront]?.direction = DcMotorSimple.Direction.REVERSE;
-        //this.motors[Motors.LeftBack]?.direction = DcMotorSimple.Direction.REVERSE;
+        this.motors[Motors.LeftFront]?.direction = DcMotorSimple.Direction.REVERSE;
+        this.motors[Motors.LeftBack]?.direction = DcMotorSimple.Direction.REVERSE;
 
         this.servos[Servos.ClawRot]?.direction = Servo.Direction.REVERSE;
 

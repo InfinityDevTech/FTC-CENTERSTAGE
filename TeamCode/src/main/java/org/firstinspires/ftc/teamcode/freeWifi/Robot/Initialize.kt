@@ -16,8 +16,7 @@ class Initialize(private val robot: Robot) {
             Motors.RightBack to robot.hardwareMap.get(DcMotor::class.java, "back_right"),
             Motors.ArmLeft to robot.hardwareMap.get(DcMotor::class.java, "arm_left"),
             Motors.ArmRight to robot.hardwareMap.get(DcMotor::class.java, "arm_right"),
-            Motors.ArmMid to robot.hardwareMap.get(DcMotor::class.java, "arm_mid"),
-            Motors.Intake to robot.hardwareMap.get(DcMotor::class.java, "intake")
+            Motors.ArmMid to robot.hardwareMap.get(DcMotor::class.java, "arm_mid")
         )
 
         robot.servos = hashMapOf(
