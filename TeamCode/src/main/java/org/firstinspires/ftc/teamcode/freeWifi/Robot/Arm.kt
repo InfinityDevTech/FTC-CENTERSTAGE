@@ -115,15 +115,23 @@ class Arm(var robot: Robot) : IMovementComposable {
         claw_grip_pos = claw_grip_pos.coerceIn(0.0, 1.0);
     }
 
-    public fun auto_pos() {
-        arm_mid.targetPosition = mid_pos
-        arm_left.targetPosition = -low_pos
-        arm_right.targetPosition = low_pos
-        claw_rot.position = claw_rot_pos
-        claw_grip.position = claw_grip_pos;
+    public fun dropItLikeItsHot() {
+        claw_grip.position = claw_open_pos;
+    }
 
-        arm_left.targetPosition = -(low_pos + 30);
-        arm_right.targetPosition = (low_pos + 30)
+    public fun grabItLikeItsCold() {
+        claw_grip.position = claw_close_pos;
+    }
+
+    public fun mobile_mode() {
+        claw_rot.position = 0.1
+        arm_left.targetPosition = 210
+        arm_right.targetPosition = -210
+        arm_mid.targetPosition = -1
+    }
+
+    public fun update_auto_pos() {
+        claw_grip.position = claw_grip_pos;
     }
 
     // Reflection magic, reads a property using a stream, its pretty cool.

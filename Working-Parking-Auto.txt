@@ -1,0 +1,21 @@
+ val trajectory = drive.trajectorySequenceBuilder(start)
+            .lineTo(Vector2d(-38.0, 9.0),
+                SampleMecanumDrive.getVelocityConstraint(10.0, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
+                SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
+            )
+            .turn(Math.toRadians(90.0))
+            .lineTo(
+                Vector2d(14.0, 9.0),
+                SampleMecanumDrive.getVelocityConstraint(10.0, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
+                SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
+            )
+            .turn(Math.toRadians(180.0))
+            .lineTo(Vector2d(14.0, 58.0),
+                SampleMecanumDrive.getVelocityConstraint(10.0, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
+                SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
+            )
+            .lineTo(Vector2d(59.0, 58.0),
+                SampleMecanumDrive.getVelocityConstraint(30.0, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
+                SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
+            )
+            .build()
