@@ -8,6 +8,7 @@ import org.firstinspires.ftc.teamcode.freeWifi.RR.SampleMecanumDrive
 import org.firstinspires.ftc.teamcode.freeWifi.Robot.Arm
 import org.firstinspires.ftc.teamcode.freeWifi.Robot.ElementDetector
 import org.firstinspires.ftc.teamcode.freeWifi.Robot.Robot
+import kotlin.properties.Delegates
 
 @Autonomous(group = "Blue")
 class BlueAuto : LinearOpMode() {
@@ -21,10 +22,19 @@ class BlueAuto : LinearOpMode() {
         val locator = ElementDetector(robot)
 
         locator.setAlliancePipe("blue")
-        val zone = locator.get_element_zone()
 
         val start = Pose2d(-38.0, 61.0, Math.toRadians(90.0))
         drive.poseEstimate = start
+
+        var zone: Int by Delegates.notNull<Int>();
+
+        while(!isStarted) {
+            zone = locator.get_element_zone()
+            telemetry.addLine("Zone: $zone")
+            telemetry.update()
+        }
+
+        waitForStart()
 
         val trajectory = drive.trajectorySequenceBuilder(start)
             .lineTo(Vector2d(-38.0, 47.0))
@@ -68,10 +78,10 @@ class BlueAuto : LinearOpMode() {
             .lineTo(Vector2d(-55.0, 12.0))
             .lineTo(Vector2d(57.0, 12.0))
             .lineTo(Vector2d(57.0, 25.0))
+                .addDisplacementMarker {
+                    arm.takeAChillPill()
+                }
             .build()
-
-
-        waitForStart()
 
         arm.grabItLikeItsCold()
 

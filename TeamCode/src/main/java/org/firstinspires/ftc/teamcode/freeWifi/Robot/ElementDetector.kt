@@ -71,7 +71,7 @@ class ElementDetector(robot: Robot) : OpenCvPipeline() {
 
         //Defining Zones
         //Rect(top left x, top left y, bottom right x, bottom right y)
-        val zone2 = input.submat(Rect(450, 200, 300, 200))
+        val zone2 = input.submat(Rect(550, 200, 300, 200))
         val zone1 = input.submat(Rect(1027, 170, 253, 230))
 
         //Averaging the colors in the zones
@@ -128,9 +128,9 @@ class ElementDetector(robot: Robot) : OpenCvPipeline() {
 
     fun setAlliancePipe(alliance: String) {
         ELEMENT_COLOR = if (alliance == "red") {
-            mutableListOf(255, 0, 0)
+            mutableListOf(255, 50, 0)
         } else {
-            mutableListOf(0, 0, 255)
+            mutableListOf(0, 50, 255)
         }
     }
 

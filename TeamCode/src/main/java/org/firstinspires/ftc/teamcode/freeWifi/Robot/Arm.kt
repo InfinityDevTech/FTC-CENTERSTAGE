@@ -123,6 +123,14 @@ class Arm(var robot: Robot) : IMovementComposable {
         claw_grip.position = claw_close_pos;
     }
 
+    public fun takeAChillPill() {
+        claw_rot.position = claw_rot_pos
+        arm_left.targetPosition = 0
+        arm_right.targetPosition = 0
+        arm_mid.targetPosition = 0
+        claw_grip.position = claw_open_pos
+    }
+
     public fun mobile_mode() {
         claw_rot.position = 0.1
         arm_left.targetPosition = 210

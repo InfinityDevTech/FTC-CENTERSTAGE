@@ -11,7 +11,7 @@ import org.firstinspires.ftc.teamcode.freeWifi.Robot.Robot
 import kotlin.properties.Delegates
 
 @Autonomous(group = "Red")
-class RedAuto : LinearOpMode() {
+class RedAuto252Edition : LinearOpMode() {
 
     override fun runOpMode() {
         val robot = Robot(this).init()
@@ -36,6 +36,8 @@ class RedAuto : LinearOpMode() {
 
         waitForStart()
 
+        arm.grabItLikeItsCold()
+
         val trajectory = drive.trajectorySequenceBuilder(start)
                 .lineTo(Vector2d(-38.0, -47.0))
                 .turn(Math.toRadians(180.0))
@@ -49,14 +51,14 @@ class RedAuto : LinearOpMode() {
                         .addDisplacementMarker {
                             arm.dropItLikeItsHot()
                         }
-                        .back(10.0)
+                        //.back(10.0)
             }
             2 -> {
                 trajectory.lineTo(Vector2d(-34.5, -32.6))
                 .addDisplacementMarker {
                     arm.dropItLikeItsHot()
                 }
-                .lineTo(Vector2d(-34.5, -48.0))
+                //.lineTo(Vector2d(-34.5, -48.0))
             }
             1 -> {
                 trajectory.turn(Math.toRadians(-90.0))
@@ -65,12 +67,12 @@ class RedAuto : LinearOpMode() {
                         .addDisplacementMarker {
                             arm.dropItLikeItsHot()
                         }
-                        .back(4.0)
-                        .lineTo(Vector2d(-34.5, -48.0))
+                        //.back(4.0)
+                        //.lineTo(Vector2d(-34.5, -48.0))
             }
         }
 
-        val built = trajectory
+        /*val built = trajectory
                 .addDisplacementMarker {
                     arm.mobile_mode()
                 }
@@ -81,10 +83,9 @@ class RedAuto : LinearOpMode() {
                 .addDisplacementMarker {
                     arm.takeAChillPill()
                 }
+        */
+                val built = trajectory
                 .build()
-
-
-        arm.grabItLikeItsCold()
 
         telemetry.addLine("POS: {}" + arm.update_auto_pos())
 
