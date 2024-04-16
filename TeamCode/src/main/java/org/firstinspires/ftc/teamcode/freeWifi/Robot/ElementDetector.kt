@@ -1,7 +1,19 @@
 package org.firstinspires.ftc.teamcode.freeWifi.Robot;
 
+import android.graphics.Bitmap
+import android.graphics.Canvas
 import com.acmerobotics.dashboard.FtcDashboard
+import org.firstinspires.ftc.robotcore.external.Telemetry
+import org.firstinspires.ftc.robotcore.external.function.Consumer
+import org.firstinspires.ftc.robotcore.external.function.Continuation
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName
+import org.firstinspires.ftc.robotcore.external.stream.CameraStreamSource
+import org.firstinspires.ftc.robotcore.internal.camera.calibration.CameraCalibration
+import org.firstinspires.ftc.vision.VisionPortal
+import org.firstinspires.ftc.vision.VisionProcessor
+import org.firstinspires.ftc.vision.apriltag.AprilTagDetection
+import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor
+import org.opencv.android.Utils
 import org.opencv.core.Core
 import org.opencv.core.Mat
 import org.opencv.core.Rect
@@ -10,29 +22,41 @@ import org.openftc.easyopencv.OpenCvCamera
 import org.openftc.easyopencv.OpenCvCameraFactory
 import org.openftc.easyopencv.OpenCvCameraRotation
 import org.openftc.easyopencv.OpenCvPipeline
+import java.util.concurrent.atomic.AtomicReference
 import kotlin.math.min
 import kotlin.math.pow
+import kotlin.math.roundToInt
 import kotlin.math.sqrt
 
+
 class ElementDetector(robot: Robot) : OpenCvPipeline() {
-    var ELEMENT_COLOR: List<Int> = mutableListOf(255, 0, 0) //(red, green, blue)
+    private var robot: Robot;
+    private var telemetry: Telemetry;
+    private var camera: OpenCvCamera? = null
 
-    var toggleShow: Int = 1
+    private var ELEMENT_COLOR: List<Int> = mutableListOf(255, 0, 0) //(red, green, blue)
 
-    var original: Mat? = null
+    private var toggleShow: Int = 1
 
-    var zone1: Mat? = null
-    var zone2: Mat? = null
+    private var original: Mat? = null
 
-    var avgColor1: Scalar? = null
-    var avgColor2: Scalar? = null
+    private var zone1: Mat? = null
+    private var zone2: Mat? = null
 
-    var distance1: Double = 1.0
-    var distance2: Double = 1.0
+    private var avgColor1: Scalar? = null
+    private var avgColor2: Scalar? = null
 
-    var maxDistance: Double = 0.0
+    private var distance1: Double = 1.0
+    private var distance2: Double = 1.0
+
+    private var maxDistance: Double = 0.0
+
+    var aprilTagProcessor: AprilTagProcessor? = null
+    var visionPortal: VisionPortal? = null
 
     init {
+        this.robot = robot;
+        this.telemetry = robot.telemetry;
         val camera = OpenCvCameraFactory
             .getInstance()
             .createWebcam(
@@ -59,6 +83,7 @@ class ElementDetector(robot: Robot) : OpenCvPipeline() {
         camera.openCameraDeviceAsync(
             AsyncListener()
         )
+        this.camera = camera;
         FtcDashboard.getInstance().startCameraStream(camera, 0.0)
     }
 
@@ -138,12 +163,99 @@ class ElementDetector(robot: Robot) : OpenCvPipeline() {
         return color_zone
     }
 
-    fun toggleAverageZonePipe() {
-        toggleShow = toggleShow * -1
+    fun close(): Unit {
+        zone1?.release()
+        zone2?.release()
+        original?.release()
+        camera?.closeCameraDevice()
     }
 
+    private fun CameraStreamSource(): CameraStreamSource {
+
+        return TODO("Provide the return value")
+    }
+
+    fun start_april_pipe() {
+        val process = CameraStreamGetter();
+        this.aprilTagProcessor = AprilTagProcessor.Builder()
+            .setDrawAxes(true)
+            .setDrawTagID(true)
+            .setDrawCubeProjection(true)
+            .build()
+
+        this.visionPortal = VisionPortal.Builder()
+            .setCamera(robot.hardwareMap.get("Webcam 1") as WebcamName?)
+            //.enableLiveView(true)
+            //.setStreamFormat(VisionPortal.StreamFormat.MJPEG)
+            .addProcessor(process)
+            .addProcessor(aprilTagProcessor!!)
+            .build()
+
+        FtcDashboard.getInstance().startCameraStream(process, 30.0);
+    }
+
+    fun april_telemetry() {
+        val currentDetections: List<AprilTagDetection> = this.aprilTagProcessor!!.getDetections()
+        if (currentDetections.isEmpty()) {
+            telemetry.addLine("No AprilTags Detected")
+            return
+        }
+        telemetry.addLine("AprilTags Detected ${currentDetections.size}")
+
+        // Step through the list of detections and display info for each one.
+        for (detection in currentDetections) {
+            if (detection.metadata != null) {
+                telemetry.addLine("\n==== (ID ${detection.id}) ${detection.metadata.name}")
+                telemetry.addLine(
+                    "XYZ ${detection.ftcPose.x.roundToInt()} ${detection.ftcPose.y.roundToInt()} ${detection.ftcPose.z.roundToInt()} (inch)"
+                )
+                telemetry.addLine(
+                    "PRY ${detection.ftcPose.pitch.roundToInt()} ${detection.ftcPose.roll.roundToInt()} ${detection.ftcPose.yaw.roundToInt()} (deg)"
+                )
+            } else {
+                telemetry.addLine("\n==== (ID ${detection.id})")
+                telemetry.addLine(
+                    "Center ${detection.center.x} ${detection.center.y}"
+                )
+            }
+        } // end for() loop
+
+
+        // Add "key" information to telemetry
+        telemetry.addLine("\nkey:\nXYZ = X (Right), Y (Forward), Z (Up) dist.")
+        telemetry.addLine("PRY = Pitch, Roll & Yaw (XYZ Rotation)")
+        telemetry.addLine("RBE = Range, Bearing & Elevation")
+    }
+
+
     companion object {
-        //Telemetry telemetry;
         var color_zone: Int = 1
+    }
+}
+
+public class CameraStreamGetter : VisionProcessor, CameraStreamSource {
+
+    private var lastFrame: AtomicReference<Bitmap> = AtomicReference<Bitmap>(Bitmap.createBitmap(1, 1, Bitmap.Config.RGB_565))
+    override fun init(p0: Int, p1: Int, p2: CameraCalibration?) {
+        lastFrame.set(Bitmap.createBitmap(p0, p1, Bitmap.Config.RGB_565))
+    }
+
+    override fun processFrame(p0: Mat?, p1: Long): Any? {
+        var b = Bitmap.createBitmap(p0!!.width(), p0!!.height(), Bitmap.Config.RGB_565);
+        Utils.matToBitmap(p0, b);
+        lastFrame.set(b)
+        return null;
+    }
+
+    override fun onDrawFrame(p0: Canvas?, p1: Int, p2: Int, p3: Float, p4: Float, p5: Any?) {
+        // nothing
+    }
+
+    override fun getFrameBitmap(continuation: Continuation<out Consumer<Bitmap?>?>) {
+        continuation.dispatch { bitmapConsumer: Consumer<Bitmap?>? ->
+            bitmapConsumer!!.accept(
+                lastFrame.get()
+            )
+        }
     }
 }

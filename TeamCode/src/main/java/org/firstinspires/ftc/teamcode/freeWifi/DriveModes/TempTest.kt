@@ -11,11 +11,14 @@ class TempTest : LinearOpMode() {
     override fun runOpMode() {
         val robot = Robot(this).init();
         val locator = ElementDetector(robot);
-        locator.setAlliancePipe("blue");
+        locator.close();
+        locator.start_april_pipe();
+
         waitForStart()
+
         while (opModeIsActive()) {
-            telemetry.addData("Element Zone", locator.get_element_zone());
-            telemetry.update();
+            locator.april_telemetry()
+            telemetry.update()
         }
     }
 

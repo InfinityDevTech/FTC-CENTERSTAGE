@@ -37,27 +37,17 @@ class Mecanum : LinearOpMode() {
         val gamepad1: Gamepad = this.gamepad1;
         val gamepad2: Gamepad = this.gamepad2;
         var lastTime: Long = System.currentTimeMillis();
-        
         var speed_pressed = false;
 
-        telemetry.addLine("[ROBOT]: " + robot.currentState);
-
         robot.init();
+        val arm = Arm(robot);
         val smd = SampleMecanumDrive(robot);
 
-        //robot.motors[Motors.LeftFront]!!.direction = DcMotorSimple.Direction.REVERSE
-        //robot.motors[Motors.RightFront]!!.direction = DcMotorSimple.Direction.REVERSE
-        //smd.poseEstimate = Pose2d(-38.0, 61.0, Math.toRadians(90.0));
-
+        telemetry.addLine("[ROBOT]: " + robot.currentState);
         telemetry.update();
 
         // Wait for the start to press
         waitForStart();
-
-        // Moves, so lets not run before initialization
-        val arm = Arm(robot);
-
-        telemetry.update();
 
         // NO VARIABLES IN HERE PERSIST. ITS PER LOOP!
         while (opModeIsActive()) {

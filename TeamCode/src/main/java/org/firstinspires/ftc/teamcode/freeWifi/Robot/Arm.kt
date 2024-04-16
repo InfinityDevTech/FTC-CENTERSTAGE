@@ -8,7 +8,7 @@ public data class ArmPos(val button: String, val mid_pos: Int, val low_pos: Int,
 class Arm(var robot: Robot) : IMovementComposable {
     private var mid_pos = 0;
     private var low_pos = 0;
-    private var claw_rot_pos = 0.1;
+    private var claw_rot_pos = 0.38;
     private var claw_grip_pos = 0.70;
 
     private var gripping = false;
@@ -22,7 +22,7 @@ class Arm(var robot: Robot) : IMovementComposable {
     private var set_positions: Array<ArmPos> = arrayOf(
         ArmPos("y", -5070, 150, 1.0, "Place"),
         ArmPos("a", 0, 0, 0.1, "Grab"),
-        ArmPos("b", -1, -210, 0.1, "Anti-Drag"),
+        ArmPos("b", -500, -210, 0.1, "Anti-Drag"),
         ArmPos("dpad_down", -8340, 1651, 0.54, "Init Grab"),
         ArmPos("dpad_up", -5280, 871, 0.54, "Pull Up"),
     );
@@ -111,8 +111,16 @@ class Arm(var robot: Robot) : IMovementComposable {
         }
         check_set_positions();
 
-        claw_rot_pos = claw_rot_pos.coerceIn(0.0, 0.55);
+        claw_rot_pos = claw_rot_pos.coerceIn(0.0, 0.75);
         claw_grip_pos = claw_grip_pos.coerceIn(0.0, 1.0);
+    }
+
+    public fun zero_pos() {
+        claw_grip.position = claw_grip_pos
+        claw_rot.position = claw_rot_pos
+        arm_mid.targetPosition = mid_pos
+        arm_left.targetPosition = -low_pos
+        arm_right.targetPosition = low_pos
     }
 
     public fun dropItLikeItsHot() {
@@ -123,23 +131,18 @@ class Arm(var robot: Robot) : IMovementComposable {
         claw_grip.position = claw_close_pos;
     }
 
-    public fun takeAChillPill() {
-        claw_rot.position = claw_rot_pos
-        arm_left.targetPosition = 0
-        arm_right.targetPosition = 0
-        arm_mid.targetPosition = 0
-        claw_grip.position = claw_open_pos
+    public fun drop_pos() {
+        arm_left.targetPosition = -62
+        arm_right.targetPosition = 62
+        arm_mid.targetPosition = -111
+        claw_rot.position = 0.65
     }
 
-    public fun mobile_mode() {
-        claw_rot.position = 0.1
-        arm_left.targetPosition = 210
-        arm_right.targetPosition = -210
-        arm_mid.targetPosition = -1
-    }
-
-    public fun update_auto_pos() {
-        claw_grip.position = claw_grip_pos;
+    public fun placement_pos() {
+        arm_left.targetPosition = 209
+        arm_right.targetPosition = -209
+        arm_mid.targetPosition = -4969
+        claw_rot.position = 0.75
     }
 
     // Reflection magic, reads a property using a stream, its pretty cool.
